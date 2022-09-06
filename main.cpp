@@ -2,7 +2,7 @@
 #include <new>
 #include <node_api.h>
 #include <utility>
-#include "main.cpp"
+#include "./SMAZ-WASM-Wrapper-master/main.cpp"
 
 using namespace std;
 
