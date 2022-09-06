@@ -1,0 +1,23 @@
+{
+	"name": "@nicolasflamel/smaz-native",
+	"version": "0.0.5",
+	"description": "Node.js addon for parts of the official SMAZ implementation",
+	"main": "./build/Release/SMAZ.node",
+	"gypfile": true,
+	"scripts": {
+		"preinstall": "wget -O \"./smaz.zip\" \"https://github.com/antirez/smaz/archive/master.zip\" && unzip \"./smaz.zip\" && wget -O \"./smaz-wrapper.zip\" \"https://github.com/NicolasFlamel1/SMAZ-WASM-Wrapper/archive/refs/heads/master.zip\" && unzip \"./smaz-wrapper.zip\"",
+		"install": "node-gyp rebuild"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/NicolasFlamel1/SMAZ-Node.js-Addon.git"
+	},
+	"keywords": [
+		"SMAZ"	
+	],
+	"author": "Nicolas Flamel",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/NicolasFlamel1/SMAZ-Node.js-Addon/issues"
+	}
+}
