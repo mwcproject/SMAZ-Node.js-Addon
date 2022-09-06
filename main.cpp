@@ -40,7 +40,7 @@ NAPI_MODULE_INIT() {
 		return nullptr;
 	}
 
-	// Check if create compress property failed
+	// Check if creating compress property failed
 	napi_value temp;
 	if(napi_create_function(env, nullptr, 0, compress, nullptr, &temp) != napi_ok || napi_set_named_property(env, exports, "compress", temp) != napi_ok) {
 	
@@ -48,7 +48,7 @@ NAPI_MODULE_INIT() {
 		return nullptr;
 	}
 	
-	// Check if create decompress property failed
+	// Check if creating decompress property failed
 	if(napi_create_function(env, nullptr, 0, decompress, nullptr, &temp) != napi_ok || napi_set_named_property(env, exports, "decompress", temp) != napi_ok) {
 	
 		// Return nothing
