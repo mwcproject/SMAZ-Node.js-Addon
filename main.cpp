@@ -75,7 +75,7 @@ napi_value compress(napi_env environment, napi_callback_info arguments) {
 	// Check if no arguments were provided
 	size_t argc = 1;
 	napi_value argv[argc];
-	if(napi_get_cb_info(environment, arguments, &argc, argv, nullptr, nullptr) != napi_ok || !argc) {
+	if(napi_get_cb_info(environment, arguments, &argc, argv, nullptr, nullptr) != napi_ok || argc != sizeof(argv) / sizeof(argv[0])) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -115,7 +115,7 @@ napi_value decompress(napi_env environment, napi_callback_info arguments) {
 	// Check if no arguments were provided
 	size_t argc = 1;
 	napi_value argv[argc];
-	if(napi_get_cb_info(environment, arguments, &argc, argv, nullptr, nullptr) != napi_ok || !argc) {
+	if(napi_get_cb_info(environment, arguments, &argc, argv, nullptr, nullptr) != napi_ok || argc != sizeof(argv) / sizeof(argv[0])) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -177,9 +177,17 @@ pair<const uint8_t *, size_t> uint8ArrayToBuffer(napi_env environment, napi_valu
 // Buffer to uint8 array
 napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size) {
 
-	// Check if allocating memory failed
+	// Check if allocating memory for buffer failed
 	uint8_t *buffer = new(nothrow) uint8_t[size];
 	if(!buffer) {
+	
+		// Return operation failed
+		return OPERATION_FAILED;
+	}
+	
+	// Check if allocating memory for size hint failed
+	size_t *sizeHint = new(nothrow) size_t(size);
+	if(!sizeHint) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -196,12 +204,18 @@ napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size) 
 	if(napi_create_external_arraybuffer(environment, buffer, size, [](napi_env environment, void *finalizeData, void *finalizeHint) {
 	
 		// Get buffer
-		const uint8_t *buffer = reinterpret_cast<uint8_t *>(finalizeData);
+		uint8_t *buffer = reinterpret_cast<uint8_t *>(finalizeData);
+		
+		// Get size hint
+		const size_t *sizeHint = static_cast<size_t *>(finalizeHint);
+		
+		// Clear buffer
+		explicit_bzero(buffer, *sizeHint);
 		
 		// Free memory
 		delete [] buffer;
 	
-	}, nullptr, &arrayBuffer) != napi_ok) {
+	}, sizeHint, &arrayBuffer) != napi_ok) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;

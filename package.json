@@ -1,6 +1,6 @@
 {
 	"name": "@nicolasflamel/smaz-native",
-	"version": "0.0.8",
+	"version": "0.0.9",
 	"description": "Node.js addon for parts of the official SMAZ implementation",
 	"main": "./build/Release/SMAZ.node",
 	"gypfile": true,
@@ -13,7 +13,7 @@
 		"url": "git+https://github.com/NicolasFlamel1/SMAZ-Node.js-Addon.git"
 	},
 	"keywords": [
-		"SMAZ"	
+		"SMAZ"
 	],
 	"author": "Nicolas Flamel",
 	"license": "MIT",
