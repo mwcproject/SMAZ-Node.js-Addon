@@ -72,7 +72,7 @@ NAPI_MODULE_INIT() {
 // Compress
 napi_value compress(napi_env environment, napi_callback_info arguments) {
 
-	// Check if no arguments were provided
+	// Check if not enough arguments were provided
 	size_t argc = 1;
 	napi_value argv[argc];
 	if(napi_get_cb_info(environment, arguments, &argc, argv, nullptr, nullptr) != napi_ok || argc != sizeof(argv) / sizeof(argv[0])) {
@@ -112,7 +112,7 @@ napi_value compress(napi_env environment, napi_callback_info arguments) {
 // Decompress
 napi_value decompress(napi_env environment, napi_callback_info arguments) {
 
-	// Check if no arguments were provided
+	// Check if not enough arguments were provided
 	size_t argc = 1;
 	napi_value argv[argc];
 	if(napi_get_cb_info(environment, arguments, &argc, argv, nullptr, nullptr) != napi_ok || argc != sizeof(argv) / sizeof(argv[0])) {
@@ -181,6 +181,9 @@ napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size) 
 	uint8_t *buffer = new(nothrow) uint8_t[size];
 	if(!buffer) {
 	
+		// Clear data
+		explicit_bzero(data, size);
+	
 		// Return operation failed
 		return OPERATION_FAILED;
 	}
@@ -188,6 +191,12 @@ napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size) 
 	// Check if allocating memory for size hint failed
 	size_t *sizeHint = new(nothrow) size_t(size);
 	if(!sizeHint) {
+	
+		// Clear data
+		explicit_bzero(data, size);
+	
+		// Free memory
+		delete [] buffer;
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -214,8 +223,16 @@ napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size) 
 		
 		// Free memory
 		delete [] buffer;
+		delete sizeHint;
 	
 	}, sizeHint, &arrayBuffer) != napi_ok) {
+	
+		// Clear buffer
+		explicit_bzero(buffer, size);
+	
+		// Free memory
+		delete [] buffer;
+		delete sizeHint;
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -224,6 +241,13 @@ napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size) 
 	// Check if creating uint8 array from array buffer failed
 	napi_value uint8Array;
 	if(napi_create_typedarray(environment, napi_uint8_array, size, arrayBuffer, 0, &uint8Array) != napi_ok) {
+	
+		// Clear buffer
+		explicit_bzero(buffer, size);
+	
+		// Free memory
+		delete [] buffer;
+		delete sizeHint;
 	
 		// Return operation failed
 		return OPERATION_FAILED;

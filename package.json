@@ -1,6 +1,6 @@
 {
 	"name": "@nicolasflamel/smaz-native",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"description": "Node.js addon for parts of the official SMAZ implementation",
 	"main": "./build/Release/SMAZ.node",
 	"gypfile": true,
