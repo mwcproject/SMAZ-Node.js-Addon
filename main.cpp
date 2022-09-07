@@ -1,7 +1,7 @@
 // Header files
 #include <new>
 #include <node_api.h>
-#include <utility>
+#include <tuple>
 #include "./SMAZ-WASM-Wrapper-master/main.cpp"
 
 using namespace std;
@@ -22,7 +22,7 @@ static napi_value compress(napi_env environment, napi_callback_info arguments);
 static napi_value decompress(napi_env environment, napi_callback_info arguments);
 
 // Uint8 array to buffer
-static pair<const uint8_t *, size_t> uint8ArrayToBuffer(napi_env environment, napi_value uint8Array);
+static tuple<uint8_t *, size_t, bool> uint8ArrayToBuffer(napi_env environment, napi_value uint8Array);
 
 // Buffer to uint8 array
 static napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size);
@@ -82,15 +82,15 @@ napi_value compress(napi_env environment, napi_callback_info arguments) {
 	}
 	
 	// Check if getting input from arguments failed
-	const pair<const uint8_t *, size_t> input = uint8ArrayToBuffer(environment, argv[0]);
-	if(!input.first) {
+	const tuple<uint8_t *, size_t, bool> input = uint8ArrayToBuffer(environment, argv[0]);
+	if(!get<2>(input)) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
 	}
 	
 	// Check if getting compressed size failed
-	const size_t compressedSize = compressSize(input.first, input.second);
+	const size_t compressedSize = compressSize(get<0>(input), get<1>(input));
 	if(compressedSize == invalidSize()) {
 	
 		// Return operation failed
@@ -99,7 +99,7 @@ napi_value compress(napi_env environment, napi_callback_info arguments) {
 	
 	// Check if compressing input failed
 	uint8_t result[compressedSize];
-	if(!compress(result, sizeof(result), input.first, input.second)) {
+	if(!compress(result, sizeof(result), get<0>(input), get<1>(input))) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -122,15 +122,15 @@ napi_value decompress(napi_env environment, napi_callback_info arguments) {
 	}
 	
 	// Check if getting input from arguments failed
-	const pair<const uint8_t *, size_t> input = uint8ArrayToBuffer(environment, argv[0]);
-	if(!input.first) {
+	const tuple<uint8_t *, size_t, bool> input = uint8ArrayToBuffer(environment, argv[0]);
+	if(!get<2>(input)) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
 	}
 	
 	// Check if getting decompressed size failed
-	const size_t decompressedSize = decompressSize(input.first, input.second);
+	const size_t decompressedSize = decompressSize(get<0>(input), get<1>(input));
 	if(decompressedSize == invalidSize()) {
 	
 		// Return operation failed
@@ -139,7 +139,7 @@ napi_value decompress(napi_env environment, napi_callback_info arguments) {
 	
 	// Check if decompressing input failed
 	uint8_t result[decompressedSize];
-	if(!decompress(result, sizeof(result), input.first, input.second)) {
+	if(!decompress(result, sizeof(result), get<0>(input), get<1>(input))) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -150,14 +150,14 @@ napi_value decompress(napi_env environment, napi_callback_info arguments) {
 }
 
 // Uint8 array to buffer
-pair<const uint8_t *, size_t> uint8ArrayToBuffer(napi_env environment, napi_value uint8Array) {
+tuple<uint8_t *, size_t, bool> uint8ArrayToBuffer(napi_env environment, napi_value uint8Array) {
 
 	// Check if uint8 array isn't a typed array
 	bool isTypedArray;
 	if(napi_is_typedarray(environment, uint8Array, &isTypedArray) != napi_ok || !isTypedArray) {
 	
-		// Return nothing
-		return {nullptr, 0};
+		// Return failure
+		return {nullptr, 0, false};
 	}
 	
 	// Check if uint8 array isn't a uint8 array
@@ -166,12 +166,12 @@ pair<const uint8_t *, size_t> uint8ArrayToBuffer(napi_env environment, napi_valu
 	uint8_t *data;
 	if(napi_get_typedarray_info(environment, uint8Array, &type, &size, reinterpret_cast<void **>(&data), nullptr, nullptr) != napi_ok || type != napi_uint8_array) {
 	
-		// Return nothing
-		return {nullptr, 0};
+		// Return failure
+		return {nullptr, 0, false};
 	}
 	
 	// Return data and size
-	return {data, size};
+	return {data, size, true};
 }
 
 // Buffer to uint8 array
