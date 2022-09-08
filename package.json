@@ -1,6 +1,6 @@
 {
 	"name": "@nicolasflamel/smaz-native",
-	"version": "0.0.19",
+	"version": "0.0.20",
 	"description": "Node.js addon for parts of the official SMAZ implementation",
 	"main": "./main.js",
 	"files": [
@@ -22,5 +22,8 @@
 	"license": "MIT",
 	"bugs": {
 		"url": "https://github.com/NicolasFlamel1/SMAZ-Node.js-Addon/issues"
+	},
+	"dependencies": {
+		"bindings": "^1.5.0"
 	}
 }
