@@ -1,1 +1,1 @@
-module["exports"] = require("bindings")("SMAZ.node");
+module["exports"] = require("./build/Release/SMAZ.node");
