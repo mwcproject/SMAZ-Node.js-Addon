@@ -1,8 +1,15 @@
 // Header files
+#include <cstring>
 #include <new>
 #include <node_api.h>
 #include <tuple>
-#include "./SMAZ-WASM-Wrapper-master/main.cpp"
+
+// SMAZ namespace
+namespace Smaz {
+
+	// Header files
+	#include "./SMAZ-WASM-Wrapper-master/main.cpp"
+}
 
 using namespace std;
 
@@ -90,8 +97,8 @@ napi_value compress(napi_env environment, napi_callback_info arguments) {
 	}
 	
 	// Check if getting compressed size failed
-	const size_t compressedSize = compressSize(get<0>(input), get<1>(input));
-	if(compressedSize == invalidSize()) {
+	const size_t compressedSize = Smaz::compressSize(get<0>(input), get<1>(input));
+	if(compressedSize == Smaz::invalidSize()) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -99,7 +106,7 @@ napi_value compress(napi_env environment, napi_callback_info arguments) {
 	
 	// Check if compressing input failed
 	uint8_t result[compressedSize];
-	if(!compress(result, sizeof(result), get<0>(input), get<1>(input))) {
+	if(!Smaz::compress(result, sizeof(result), get<0>(input), get<1>(input))) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -130,8 +137,8 @@ napi_value decompress(napi_env environment, napi_callback_info arguments) {
 	}
 	
 	// Check if getting decompressed size failed
-	const size_t decompressedSize = decompressSize(get<0>(input), get<1>(input));
-	if(decompressedSize == invalidSize()) {
+	const size_t decompressedSize = Smaz::decompressSize(get<0>(input), get<1>(input));
+	if(decompressedSize == Smaz::invalidSize()) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -139,7 +146,7 @@ napi_value decompress(napi_env environment, napi_callback_info arguments) {
 	
 	// Check if decompressing input failed
 	uint8_t result[decompressedSize];
-	if(!decompress(result, sizeof(result), get<0>(input), get<1>(input))) {
+	if(!Smaz::decompress(result, sizeof(result), get<0>(input), get<1>(input))) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;

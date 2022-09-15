@@ -1,6 +1,6 @@
 {
 	"name": "@nicolasflamel/smaz-native",
-	"version": "0.0.20",
+	"version": "0.0.21",
 	"description": "Node.js addon for parts of the official SMAZ implementation",
 	"main": "./main.js",
 	"files": [
