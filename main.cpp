@@ -3,6 +3,10 @@
 #include <new>
 #include <node_api.h>
 #include <tuple>
+#include <vector>
+
+using namespace std;
+
 
 // SMAZ namespace
 namespace Smaz {
@@ -10,8 +14,6 @@ namespace Smaz {
 	// Header files
 	#include "./SMAZ-NPM-Package-master/main.cpp"
 }
-
-using namespace std;
 
 
 // Constants
@@ -81,8 +83,8 @@ napi_value compress(napi_env environment, napi_callback_info arguments) {
 
 	// Check if not enough arguments were provided
 	size_t argc = 1;
-	napi_value argv[argc];
-	if(napi_get_cb_info(environment, arguments, &argc, argv, nullptr, nullptr) != napi_ok || argc != sizeof(argv) / sizeof(argv[0])) {
+	vector<napi_value> argv(argc);
+	if(napi_get_cb_info(environment, arguments, &argc, argv.data(), nullptr, nullptr) != napi_ok || argc != argv.size()) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -105,15 +107,15 @@ napi_value compress(napi_env environment, napi_callback_info arguments) {
 	}
 	
 	// Check if compressing input failed
-	uint8_t result[compressedSize];
-	if(!Smaz::compress(result, sizeof(result), get<0>(input), get<1>(input))) {
+	vector<uint8_t> result(compressedSize);
+	if(!Smaz::compress(result.data(), result.size(), get<0>(input), get<1>(input))) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
 	}
 	
 	// Return result as a uint8 array
-	return bufferToUint8Array(environment, result, sizeof(result));
+	return bufferToUint8Array(environment, result.data(), result.size());
 }
 
 // Decompress
@@ -121,8 +123,8 @@ napi_value decompress(napi_env environment, napi_callback_info arguments) {
 
 	// Check if not enough arguments were provided
 	size_t argc = 1;
-	napi_value argv[argc];
-	if(napi_get_cb_info(environment, arguments, &argc, argv, nullptr, nullptr) != napi_ok || argc != sizeof(argv) / sizeof(argv[0])) {
+	vector<napi_value> argv(argc);
+	if(napi_get_cb_info(environment, arguments, &argc, argv.data(), nullptr, nullptr) != napi_ok || argc != argv.size()) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
@@ -145,15 +147,15 @@ napi_value decompress(napi_env environment, napi_callback_info arguments) {
 	}
 	
 	// Check if decompressing input failed
-	uint8_t result[decompressedSize];
-	if(!Smaz::decompress(result, sizeof(result), get<0>(input), get<1>(input))) {
+	vector<uint8_t> result(decompressedSize);
+	if(!Smaz::decompress(result.data(), result.size(), get<0>(input), get<1>(input))) {
 	
 		// Return operation failed
 		return OPERATION_FAILED;
 	}
 	
 	// Return result as a uint8 array
-	return bufferToUint8Array(environment, result, sizeof(result));
+	return bufferToUint8Array(environment, result.data(), result.size());
 }
 
 // Uint8 array to buffer
