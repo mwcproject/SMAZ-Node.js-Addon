@@ -1,6 +1,5 @@
 // Header files
 #include <cstring>
-#include <new>
 #include <node_api.h>
 #include <tuple>
 #include <vector>
@@ -186,9 +185,10 @@ tuple<uint8_t *, size_t, bool> uint8ArrayToBuffer(napi_env environment, napi_val
 // Buffer to uint8 array
 napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size) {
 
-	// Check if allocating memory for buffer failed
-	uint8_t *buffer = new(nothrow) uint8_t[size];
-	if(!buffer) {
+	// Check if creating array buffer failed
+	uint8_t *arrayBufferData;
+	napi_value arrayBuffer;
+	if(napi_create_arraybuffer(environment, size, reinterpret_cast<void **>(&arrayBufferData), &arrayBuffer) != napi_ok) {
 	
 		// Clear data
 		memset(data, 0, size);
@@ -197,66 +197,18 @@ napi_value bufferToUint8Array(napi_env environment, uint8_t *data, size_t size) 
 		return OPERATION_FAILED;
 	}
 	
-	// Check if allocating memory for size hint failed
-	size_t *sizeHint = new(nothrow) size_t(size);
-	if(!sizeHint) {
-	
-		// Clear data
-		memset(data, 0, size);
-	
-		// Free memory
-		delete [] buffer;
-	
-		// Return operation failed
-		return OPERATION_FAILED;
-	}
-	
-	// Copy data
-	memcpy(buffer, data, size);
+	// Copy data to array buffer
+	memcpy(arrayBufferData, data, size);
 	
 	// Clear data
 	memset(data, 0, size);
-	
-	// Check if creating array buffer from data failed
-	napi_value arrayBuffer;
-	if(napi_create_external_arraybuffer(environment, buffer, size, [](napi_env environment, void *finalizeData, void *finalizeHint) {
-	
-		// Get buffer
-		uint8_t *buffer = reinterpret_cast<uint8_t *>(finalizeData);
-		
-		// Get size hint
-		const size_t *sizeHint = static_cast<size_t *>(finalizeHint);
-		
-		// Clear buffer
-		memset(buffer, 0, *sizeHint);
-		
-		// Free memory
-		delete [] buffer;
-		delete sizeHint;
-	
-	}, sizeHint, &arrayBuffer) != napi_ok) {
-	
-		// Clear buffer
-		memset(buffer, 0, size);
-	
-		// Free memory
-		delete [] buffer;
-		delete sizeHint;
-	
-		// Return operation failed
-		return OPERATION_FAILED;
-	}
 	
 	// Check if creating uint8 array from array buffer failed
 	napi_value uint8Array;
 	if(napi_create_typedarray(environment, napi_uint8_array, size, arrayBuffer, 0, &uint8Array) != napi_ok) {
 	
-		// Clear buffer
-		memset(buffer, 0, size);
-	
-		// Free memory
-		delete [] buffer;
-		delete sizeHint;
+		// Clear array buffer
+		memset(arrayBufferData, 0, size);
 	
 		// Return operation failed
 		return OPERATION_FAILED;
