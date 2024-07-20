@@ -1,5 +1,5 @@
 {
-	"name": "@nicolasflamel/smaz-native",
+	"name": "@mwcproject/smaz-native",
 	"version": "0.0.27",
 	"description": "Node.js addon for parts of the official SMAZ implementation",
 	"main": "./index.js",
@@ -13,7 +13,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/NicolasFlamel1/SMAZ-Node.js-Addon.git"
+		"url": "git+https://github.com/mwcproject/SMAZ-Node.js-Addon.git"
 	},
 	"keywords": [
 		"SMAZ"
@@ -21,7 +21,7 @@
 	"author": "Nicolas Flamel",
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/NicolasFlamel1/SMAZ-Node.js-Addon/issues"
+		"url": "https://github.com/mwcproject/SMAZ-Node.js-Addon/issues"
 	},
 	"dependencies": {
 		"bindings": "^1.5.0"
